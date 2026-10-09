@@ -1,0 +1,28 @@
+[
+  {
+    "Id": 1,
+    "Dni": "70000001",
+    "CodigoUniversitario": "20200001",
+    "Nombres": "Juan",
+    "Apellidos": "Perez",
+    "TipoPersona": "Alumno",
+    "Facultad": "FIIS",
+    "Telefono": "999888777",
+    "Correo": "juan.perez@unas.edu.pe",
+    "Estado": 1,
+    "FechaRegistro": "2026-03-01T10:00:00"
+  },
+  {
+    "Id": 2,
+    "Dni": "70000002",
+    "CodigoUniversitario": "20200002",
+    "Nombres": "Maria",
+    "Apellidos": "Gomez",
+    "TipoPersona": "Alumno",
+    "Facultad": "FCA",
+    "Telefono": "999888666",
+    "Correo": "maria.gomez@unas.edu.pe",
+    "Estado": 1,
+    "FechaRegistro": "2026-03-01T10:05:00"
+  }
+]

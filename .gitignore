@@ -1,0 +1,15 @@
+# Carpetas de compilación de .NET
+[Bb]in/
+[Oo]bj/
+
+# Archivos de configuración de usuario local (como Gym.UI.csproj.user)
+*.user
+*.userosscache
+*.sln.docstates
+
+# Archivos de IDE y sistema operativo
+.vs/
+.vscode/
+*.suo
+Thumbs.db
+.DS_Store
