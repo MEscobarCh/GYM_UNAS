@@ -17,9 +17,6 @@ public class RegistroExternoForm : Form
     public int NuevoIdPersona { get; private set; } = 0;
 
     // UI Controls
-    private Panel panelTop = new();
-    private Label lblTitulo = new();
-    private Button btnCerrar = new();
 
     private Label lblDni = new();
     private TextBox txtDni = new();
@@ -56,34 +53,14 @@ public class RegistroExternoForm : Form
     private void ConfigurarUI()
     {
         this.Text = "Registro de Nuevo Externo";
+        this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        this.MaximizeBox = false;
+        this.MinimizeBox = false;
         this.Size = new Size(400, 560);
         this.StartPosition = FormStartPosition.CenterParent;
         this.BackColor = Color.White;
-        this.FormBorderStyle = FormBorderStyle.None;
 
         // Top Panel
-        panelTop.BackColor = ColorTranslator.FromHtml("#005C3A");
-        panelTop.Dock = DockStyle.Top;
-        panelTop.Height = 40;
-
-        lblTitulo.Text = "Nuevo Externo";
-        lblTitulo.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-        lblTitulo.ForeColor = Color.White;
-        lblTitulo.AutoSize = true;
-        lblTitulo.Location = new Point(10, 10);
-        
-        btnCerrar.Text = "X";
-        btnCerrar.Size = new Size(40, 40);
-        btnCerrar.Location = new Point(this.Width - 40, 0);
-        btnCerrar.FlatStyle = FlatStyle.Flat;
-        btnCerrar.FlatAppearance.BorderSize = 0;
-        btnCerrar.ForeColor = Color.White;
-        btnCerrar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-        btnCerrar.Cursor = Cursors.Hand;
-        btnCerrar.Click += (s, e) => this.Close();
-
-        panelTop.Controls.Add(lblTitulo);
-        panelTop.Controls.Add(btnCerrar);
 
         int startY = 60;
         int spacing = 60;
@@ -96,6 +73,7 @@ public class RegistroExternoForm : Form
 
         txtDni.Location = new Point(leftX, startY + 20);
         txtDni.Size = new Size(340, 30);
+        txtDni.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtDni.Font = new Font("Segoe UI", 11);
         txtDni.Enabled = false; // Bloqueado
         txtDni.BackColor = Color.WhiteSmoke;
@@ -109,6 +87,7 @@ public class RegistroExternoForm : Form
 
         txtNombres.Location = new Point(leftX, startY + 20);
         txtNombres.Size = new Size(340, 30);
+        txtNombres.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtNombres.Font = new Font("Segoe UI", 11);
 
         startY += spacing;
@@ -120,6 +99,7 @@ public class RegistroExternoForm : Form
 
         txtTelefono.Location = new Point(leftX, startY + 20);
         txtTelefono.Size = new Size(340, 30);
+        txtTelefono.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtTelefono.Font = new Font("Segoe UI", 11);
 
         startY += spacing;
@@ -131,6 +111,7 @@ public class RegistroExternoForm : Form
 
         txtCorreo.Location = new Point(leftX, startY + 20);
         txtCorreo.Size = new Size(340, 30);
+        txtCorreo.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtCorreo.Font = new Font("Segoe UI", 11);
 
         startY += 50;
@@ -142,6 +123,7 @@ public class RegistroExternoForm : Form
         btnCapturarHuella.FlatAppearance.BorderSize = 0;
         btnCapturarHuella.Size = new Size(130, 30);
         btnCapturarHuella.Location = new Point(leftX, startY);
+        btnCapturarHuella.Anchor = AnchorStyles.Top | AnchorStyles.Left;
         btnCapturarHuella.Font = new Font("Segoe UI", 9, FontStyle.Bold);
         btnCapturarHuella.Cursor = Cursors.Hand;
         btnCapturarHuella.Click += BtnCapturarHuella_Click;
@@ -150,6 +132,7 @@ public class RegistroExternoForm : Form
         lblHuellaEstado.Font = new Font("Segoe UI", 9, FontStyle.Bold);
         lblHuellaEstado.ForeColor = Color.Gray;
         lblHuellaEstado.Location = new Point(leftX + 140, startY + 5);
+        lblHuellaEstado.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         lblHuellaEstado.AutoSize = true;
 
         startY += 50;
@@ -170,6 +153,7 @@ public class RegistroExternoForm : Form
         btnGuardar.FlatAppearance.BorderSize = 0;
         btnGuardar.Size = new Size(160, 40);
         btnGuardar.Location = new Point(leftX, startY);
+        btnGuardar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         btnGuardar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnGuardar.Cursor = Cursors.Hand;
         btnGuardar.Click += BtnGuardar_Click;
@@ -181,11 +165,10 @@ public class RegistroExternoForm : Form
         btnCancelar.FlatAppearance.BorderSize = 0;
         btnCancelar.Size = new Size(160, 40);
         btnCancelar.Location = new Point(leftX + 180, startY);
+        btnCancelar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         btnCancelar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnCancelar.Cursor = Cursors.Hand;
         btnCancelar.Click += (s, e) => this.Close();
-
-        this.Controls.Add(panelTop);
         this.Controls.Add(lblDni);
         this.Controls.Add(txtDni);
         this.Controls.Add(lblNombres);

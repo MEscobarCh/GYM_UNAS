@@ -13,7 +13,6 @@ public class LoginForm : Form
 
     // Controles
     private Panel panelIzquierdo = new();
-    private Label lblTitulo = new();
     private Label lblSubtitulo = new();
     
     private TextBox txtUsuario = new();
@@ -22,7 +21,6 @@ public class LoginForm : Form
     private Label lblPassword = new();
     private Button btnLogin = new();
     private Label lblMensaje = new();
-    private Button btnCerrar = new();
 
     public LoginForm(AuthService authService, IServiceProvider serviceProvider)
     {
@@ -34,7 +32,6 @@ public class LoginForm : Form
     private void ConfigurarUI()
     {
         // Propiedades del formulario base
-        this.FormBorderStyle = FormBorderStyle.None;
         this.BackColor = Color.White;
         this.Size = new Size(700, 400);
         this.StartPosition = FormStartPosition.CenterScreen;
@@ -45,21 +42,8 @@ public class LoginForm : Form
         panelIzquierdo.Width = 250;
 
         // Botón de cerrar ventana (esquina superior derecha)
-        btnCerrar.Text = "X";
-        btnCerrar.Size = new Size(30, 30);
-        btnCerrar.Location = new Point(this.Width - 30, 0);
-        btnCerrar.FlatStyle = FlatStyle.Flat;
-        btnCerrar.FlatAppearance.BorderSize = 0;
-        btnCerrar.ForeColor = Color.Gray;
-        btnCerrar.Cursor = Cursors.Hand;
-        btnCerrar.Click += (s, e) => Application.Exit();
 
         // Títulos
-        lblTitulo.Text = "BIENVENIDO";
-        lblTitulo.Font = new Font("Segoe UI", 20, FontStyle.Bold);
-        lblTitulo.ForeColor = ColorTranslator.FromHtml("#005C3A");
-        lblTitulo.AutoSize = true;
-        lblTitulo.Location = new Point(380, 50);
 
         lblSubtitulo.Text = "Sistema Gym UNAS";
         lblSubtitulo.Font = new Font("Segoe UI", 12, FontStyle.Regular);
@@ -128,8 +112,6 @@ public class LoginForm : Form
 
         // Agregar controles
         this.Controls.Add(panelIzquierdo);
-        this.Controls.Add(btnCerrar);
-        this.Controls.Add(lblTitulo);
         this.Controls.Add(lblSubtitulo);
         this.Controls.Add(lblUsuario);
         this.Controls.Add(txtUsuario);

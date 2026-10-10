@@ -13,9 +13,6 @@ public class AsistenciasForm : Form
     private readonly IngresoService _ingresoService;
     
     // UI Controls
-    private Panel panelTop = new();
-    private Label lblTitulo = new();
-    private Button btnCerrar = new();
     
     private Panel panelFiltros = new();
     private Label lblFecha = new();
@@ -40,35 +37,14 @@ public class AsistenciasForm : Form
     private void ConfigurarUI()
     {
         this.Text = "Módulo de Asistencias";
+        this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        this.MaximizeBox = false;
+        this.MinimizeBox = false;
         this.Size = new Size(900, 600);
         this.StartPosition = FormStartPosition.CenterParent;
         this.BackColor = ColorTranslator.FromHtml("#F0F2F5");
-        this.FormBorderStyle = FormBorderStyle.None;
 
         // Top Panel
-        panelTop.BackColor = ColorTranslator.FromHtml("#005C3A");
-        panelTop.Dock = DockStyle.Top;
-        panelTop.Height = 50;
-
-        lblTitulo.Text = "REPORTE DE ASISTENCIAS E INGRESOS";
-        lblTitulo.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-        lblTitulo.ForeColor = Color.White;
-        lblTitulo.AutoSize = true;
-        lblTitulo.Location = new Point(20, 12);
-        
-        btnCerrar.Text = "✕";
-        btnCerrar.Size = new Size(40, 40);
-        btnCerrar.Location = new Point(this.Width - 45, 5);
-        btnCerrar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        btnCerrar.FlatStyle = FlatStyle.Flat;
-        btnCerrar.FlatAppearance.BorderSize = 0;
-        btnCerrar.ForeColor = Color.White;
-        btnCerrar.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-        btnCerrar.Cursor = Cursors.Hand;
-        btnCerrar.Click += (s, e) => this.Close();
-
-        panelTop.Controls.Add(lblTitulo);
-        panelTop.Controls.Add(btnCerrar);
 
         // Filtros Panel
         panelFiltros.Dock = DockStyle.Top;
@@ -140,7 +116,6 @@ public class AsistenciasForm : Form
         this.Controls.Add(container);
         this.Controls.Add(panelBottom);
         this.Controls.Add(panelFiltros);
-        this.Controls.Add(panelTop);
     }
 
     private async Task AsistenciasForm_Load(object? sender, EventArgs e)

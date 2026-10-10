@@ -14,10 +14,6 @@ public class ConfigForm : Form
 {
     private readonly ConfigService _configService;
     private readonly IConfiguration _configuration;
-
-    private Panel panelTop = new();
-    private Label lblTitulo = new();
-    private Button btnCerrar = new();
     
     private Label lblUrl = new();
     private TextBox txtUrl = new();
@@ -55,33 +51,12 @@ public class ConfigForm : Form
     private void ConfigurarUI()
     {
         this.Text = "Gym UNAS - Configuración";
+        this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        this.MaximizeBox = false;
+        this.MinimizeBox = false;
         this.Size = new Size(500, 420);
         this.StartPosition = FormStartPosition.CenterParent;
         this.BackColor = Color.White;
-        this.FormBorderStyle = FormBorderStyle.None;
-
-        panelTop.BackColor = ColorTranslator.FromHtml("#005C3A");
-        panelTop.Dock = DockStyle.Top;
-        panelTop.Height = 40;
-
-        lblTitulo.Text = "CONFIGURACIÓN";
-        lblTitulo.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-        lblTitulo.ForeColor = Color.White;
-        lblTitulo.AutoSize = true;
-        lblTitulo.Location = new Point(10, 10);
-        
-        btnCerrar.Text = "X";
-        btnCerrar.Size = new Size(30, 30);
-        btnCerrar.Location = new Point(this.Width - 30, 5);
-        btnCerrar.FlatStyle = FlatStyle.Flat;
-        btnCerrar.FlatAppearance.BorderSize = 0;
-        btnCerrar.ForeColor = Color.White;
-        btnCerrar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-        btnCerrar.Cursor = Cursors.Hand;
-        btnCerrar.Click += (s, e) => this.Close();
-
-        panelTop.Controls.Add(lblTitulo);
-        panelTop.Controls.Add(btnCerrar);
 
         // URL API
         lblUrl.Text = "URL de la API (OCDA):";
@@ -92,6 +67,7 @@ public class ConfigForm : Form
 
         txtUrl.Location = new Point(40, 80);
         txtUrl.Size = new Size(420, 25);
+        txtUrl.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtUrl.Font = new Font("Segoe UI", 10);
         txtUrl.BorderStyle = BorderStyle.FixedSingle;
 
@@ -110,6 +86,7 @@ public class ConfigForm : Form
 
         txtDbServidor.Location = new Point(40, 170);
         txtDbServidor.Size = new Size(420, 25);
+        txtDbServidor.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtDbServidor.Font = new Font("Segoe UI", 10);
         txtDbServidor.BorderStyle = BorderStyle.FixedSingle;
 
@@ -129,9 +106,11 @@ public class ConfigForm : Form
         lblDbPassword.Font = new Font("Segoe UI", 9);
         lblDbPassword.AutoSize = true;
         lblDbPassword.Location = new Point(260, 200);
+        lblDbPassword.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
         txtDbPassword.Location = new Point(260, 220);
         txtDbPassword.Size = new Size(200, 25);
+        txtDbPassword.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         txtDbPassword.Font = new Font("Segoe UI", 10);
         txtDbPassword.BorderStyle = BorderStyle.FixedSingle;
         txtDbPassword.UseSystemPasswordChar = true;
@@ -143,6 +122,7 @@ public class ConfigForm : Form
         btnGuardar.FlatStyle = FlatStyle.Flat;
         btnGuardar.FlatAppearance.BorderSize = 0;
         btnGuardar.Size = new Size(200, 35);
+        btnGuardar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         btnGuardar.Location = new Point(40, 270);
         btnGuardar.Font = new Font("Segoe UI", 9, FontStyle.Bold);
         btnGuardar.Cursor = Cursors.Hand;
@@ -154,6 +134,7 @@ public class ConfigForm : Form
         btnTestear.FlatStyle = FlatStyle.Flat;
         btnTestear.FlatAppearance.BorderSize = 0;
         btnTestear.Size = new Size(200, 35);
+        btnTestear.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         btnTestear.Location = new Point(260, 270);
         btnTestear.Font = new Font("Segoe UI", 9, FontStyle.Bold);
         btnTestear.Cursor = Cursors.Hand;
@@ -164,9 +145,8 @@ public class ConfigForm : Form
         lblMensaje.ForeColor = Color.Gray;
         lblMensaje.AutoSize = false;
         lblMensaje.Size = new Size(420, 100);
+        lblMensaje.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         lblMensaje.Location = new Point(40, 315);
-
-        this.Controls.Add(panelTop);
         this.Controls.Add(lblUrl);
         this.Controls.Add(txtUrl);
         this.Controls.Add(lblDbTitle);

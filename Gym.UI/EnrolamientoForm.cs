@@ -14,10 +14,6 @@ public class EnrolamientoForm : Form, DPFP.Capture.EventHandler
     private readonly IPersonaRepository _personaRepository;
     private int _idPersona = 0;
 
-    private Panel panelTop = new();
-    private Label lblTitulo = new();
-    private Button btnCerrar = new();
-
     private Label lblDNI = new();
     private TextBox txtDNI = new();
     private Button btnBuscar = new();
@@ -84,33 +80,12 @@ public class EnrolamientoForm : Form, DPFP.Capture.EventHandler
     private void ConfigurarUI()
     {
         this.Text = "Enrolamiento de Huella";
+        this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        this.MaximizeBox = false;
+        this.MinimizeBox = false;
         this.Size = new Size(400, 500);
         this.StartPosition = FormStartPosition.CenterParent;
         this.BackColor = Color.White;
-        this.FormBorderStyle = FormBorderStyle.None;
-
-        panelTop.BackColor = ColorTranslator.FromHtml("#005C3A");
-        panelTop.Dock = DockStyle.Top;
-        panelTop.Height = 40;
-
-        lblTitulo.Text = "Registrar Huella Biométrica";
-        lblTitulo.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-        lblTitulo.ForeColor = Color.White;
-        lblTitulo.AutoSize = true;
-        lblTitulo.Location = new Point(10, 10);
-        
-        btnCerrar.Text = "X";
-        btnCerrar.Size = new Size(40, 40);
-        btnCerrar.Location = new Point(this.Width - 40, 0);
-        btnCerrar.FlatStyle = FlatStyle.Flat;
-        btnCerrar.FlatAppearance.BorderSize = 0;
-        btnCerrar.ForeColor = Color.White;
-        btnCerrar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-        btnCerrar.Cursor = Cursors.Hand;
-        btnCerrar.Click += (s, e) => this.Close();
-
-        panelTop.Controls.Add(lblTitulo);
-        panelTop.Controls.Add(btnCerrar);
 
         lblDNI.Text = "DNI / Código:";
         lblDNI.Location = new Point(30, 60);
@@ -185,8 +160,6 @@ public class EnrolamientoForm : Form, DPFP.Capture.EventHandler
         btnCancelar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnCancelar.Cursor = Cursors.Hand;
         btnCancelar.Click += (s, e) => { this.DialogResult = DialogResult.Cancel; this.Close(); };
-
-        this.Controls.Add(panelTop);
         this.Controls.Add(lblDNI);
         this.Controls.Add(txtDNI);
         this.Controls.Add(btnBuscar);

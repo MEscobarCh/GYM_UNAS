@@ -11,9 +11,6 @@ public class CajaForm : Form
     private readonly IServiceProvider _serviceProvider;
 
     // UI Controls
-    private Panel panelTop = new();
-    private Label lblTitulo = new();
-    private Button btnCerrar = new();
 
     private Label lblFechaInicio = new();
     private DateTimePicker dtpFechaInicio = new();
@@ -48,40 +45,20 @@ public class CajaForm : Form
     private async void ConfigurarUI()
     {
         this.Text = "Reportes de Caja e Historial";
+        this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        this.MaximizeBox = false;
+        this.MinimizeBox = false;
         this.Size = new Size(900, 650);
         this.StartPosition = FormStartPosition.CenterScreen;
         this.BackColor = ColorTranslator.FromHtml("#F0F2F5");
-        this.FormBorderStyle = FormBorderStyle.None;
 
         // Top Panel
-        panelTop.BackColor = ColorTranslator.FromHtml("#005C3A"); // Verde institucional
-        panelTop.Dock = DockStyle.Top;
-        panelTop.Height = 50;
-
-        lblTitulo.Text = "CIERRE DE CAJA E HISTORIAL DE PAGOS";
-        lblTitulo.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-        lblTitulo.ForeColor = Color.White;
-        lblTitulo.AutoSize = true;
-        lblTitulo.Location = new Point(20, 15);
-        
-        btnCerrar.Text = "✕";
-        btnCerrar.Size = new Size(40, 40);
-        btnCerrar.Location = new Point(this.Width - 40, 5);
-        btnCerrar.FlatStyle = FlatStyle.Flat;
-        btnCerrar.FlatAppearance.BorderSize = 0;
-        btnCerrar.ForeColor = Color.White;
-        btnCerrar.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-        btnCerrar.Cursor = Cursors.Hand;
-        btnCerrar.Click += (s, e) => this.Close();
-
-        panelTop.Controls.Add(lblTitulo);
-        panelTop.Controls.Add(btnCerrar);
-        this.Controls.Add(panelTop);
 
         // Top Content: Resumen de Caja
         gbResumen.Text = "Resumen de Caja Hoy";
         gbResumen.Location = new Point(20, 60);
         gbResumen.Size = new Size(860, 80);
+        gbResumen.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         gbResumen.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         gbResumen.BackColor = Color.White;
 
@@ -112,6 +89,7 @@ public class CajaForm : Form
         Panel pnlFiltros = new Panel();
         pnlFiltros.Location = new Point(20, 150);
         pnlFiltros.Size = new Size(860, 50);
+        pnlFiltros.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         pnlFiltros.BackColor = Color.White;
 
         lblFechaInicio.Text = "Desde:";
@@ -146,6 +124,7 @@ public class CajaForm : Form
         btnNuevoPago.Text = "+ Nuevo Pago";
         btnNuevoPago.Location = new Point(720, 10);
         btnNuevoPago.Size = new Size(120, 30);
+        btnNuevoPago.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnNuevoPago.BackColor = ColorTranslator.FromHtml("#005C3A");
         btnNuevoPago.ForeColor = Color.White;
         btnNuevoPago.FlatStyle = FlatStyle.Flat;
@@ -165,6 +144,7 @@ public class CajaForm : Form
         // Bottom Content: DataGridView
         dgvHistorial.Location = new Point(20, 210);
         dgvHistorial.Size = new Size(860, 420);
+        dgvHistorial.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         dgvHistorial.AllowUserToAddRows = false;
         dgvHistorial.AllowUserToDeleteRows = false;
         dgvHistorial.ReadOnly = true;

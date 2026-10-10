@@ -18,9 +18,6 @@ public class PagoForm : Form
     private decimal _montoActual = 0;
 
     // Controles UI
-    private Panel panelTop = new();
-    private Label lblTitulo = new();
-    private Button btnCerrar = new();
 
     private Label lblDni = new();
     private TextBox txtDni = new();
@@ -65,34 +62,14 @@ public class PagoForm : Form
     private void ConfigurarUI()
     {
         this.Text = "Registrar Pago - Externo";
+        this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        this.MaximizeBox = false;
+        this.MinimizeBox = false;
         this.Size = new Size(400, 600);
         this.StartPosition = FormStartPosition.CenterParent;
         this.BackColor = Color.White;
-        this.FormBorderStyle = FormBorderStyle.None;
 
         // Top Panel
-        panelTop.BackColor = ColorTranslator.FromHtml("#005C3A");
-        panelTop.Dock = DockStyle.Top;
-        panelTop.Height = 40;
-
-        lblTitulo.Text = "Registrar Pago - Externo";
-        lblTitulo.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-        lblTitulo.ForeColor = Color.White;
-        lblTitulo.AutoSize = true;
-        lblTitulo.Location = new Point(10, 10);
-        
-        btnCerrar.Text = "X";
-        btnCerrar.Size = new Size(40, 40);
-        btnCerrar.Location = new Point(this.Width - 40, 0);
-        btnCerrar.FlatStyle = FlatStyle.Flat;
-        btnCerrar.FlatAppearance.BorderSize = 0;
-        btnCerrar.ForeColor = Color.White;
-        btnCerrar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-        btnCerrar.Cursor = Cursors.Hand;
-        btnCerrar.Click += (s, e) => this.Close();
-
-        panelTop.Controls.Add(lblTitulo);
-        panelTop.Controls.Add(btnCerrar);
 
         // Controles Internos
         int startY = 60;
@@ -107,12 +84,14 @@ public class PagoForm : Form
 
         txtDni.Location = new Point(leftX, startY + 20);
         txtDni.Size = new Size(200, 30);
+        txtDni.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtDni.Font = new Font("Segoe UI", 11);
         this.Controls.Add(txtDni);
 
         btnBuscar.Text = "Buscar";
         btnBuscar.Location = new Point(leftX + 210, startY + 19);
         btnBuscar.Size = new Size(130, 30);
+        btnBuscar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnBuscar.BackColor = ColorTranslator.FromHtml("#005C3A");
         btnBuscar.ForeColor = Color.White;
         btnBuscar.FlatStyle = FlatStyle.Flat;
@@ -137,6 +116,7 @@ public class PagoForm : Form
 
         cbTipoPase.Location = new Point(leftX, startY + 20);
         cbTipoPase.Size = new Size(340, 30);
+        cbTipoPase.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         cbTipoPase.Font = new Font("Segoe UI", 11);
         cbTipoPase.DropDownStyle = ComboBoxStyle.DropDownList;
         cbTipoPase.Items.Add("Diario");
@@ -152,6 +132,7 @@ public class PagoForm : Form
 
         cbMetodoPago.Location = new Point(leftX, startY + 20);
         cbMetodoPago.Size = new Size(340, 30);
+        cbMetodoPago.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         cbMetodoPago.Font = new Font("Segoe UI", 11);
         cbMetodoPago.DropDownStyle = ComboBoxStyle.DropDownList;
         cbMetodoPago.Items.Add("EFECTIVO");
@@ -167,6 +148,7 @@ public class PagoForm : Form
 
         txtNroOperacion.Location = new Point(leftX, startY + 20);
         txtNroOperacion.Size = new Size(340, 30);
+        txtNroOperacion.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtNroOperacion.Font = new Font("Segoe UI", 11);
         txtNroOperacion.Enabled = false; 
 
@@ -177,6 +159,7 @@ public class PagoForm : Form
         lblMonto.ForeColor = ColorTranslator.FromHtml("#005C3A");
         lblMonto.Location = new Point(leftX, startY);
         lblMonto.Size = new Size(340, 30);
+        lblMonto.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         lblMonto.TextAlign = ContentAlignment.MiddleCenter;
 
         startY += 40;
@@ -186,6 +169,7 @@ public class PagoForm : Form
         lblError.ForeColor = Color.Red;
         lblError.Location = new Point(leftX, startY);
         lblError.Size = new Size(340, 40);
+        lblError.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         lblError.TextAlign = ContentAlignment.MiddleCenter;
 
         startY += 50;
@@ -196,6 +180,7 @@ public class PagoForm : Form
         btnProcesar.FlatStyle = FlatStyle.Flat;
         btnProcesar.FlatAppearance.BorderSize = 0;
         btnProcesar.Size = new Size(160, 40);
+        btnProcesar.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         btnProcesar.Location = new Point(leftX, startY);
         btnProcesar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnProcesar.Cursor = Cursors.Hand;
@@ -207,12 +192,11 @@ public class PagoForm : Form
         btnCancelar.FlatStyle = FlatStyle.Flat;
         btnCancelar.FlatAppearance.BorderSize = 0;
         btnCancelar.Size = new Size(160, 40);
+        btnCancelar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         btnCancelar.Location = new Point(leftX + 180, startY);
         btnCancelar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnCancelar.Cursor = Cursors.Hand;
         btnCancelar.Click += (s, e) => this.Close();
-
-        this.Controls.Add(panelTop);
         this.Controls.Add(lblTipoPase);
         this.Controls.Add(cbTipoPase);
         this.Controls.Add(lblMetodo);

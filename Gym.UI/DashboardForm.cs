@@ -118,7 +118,7 @@ public class DashboardForm : Form
         btnAsistencias.Cursor = Cursors.Hand;
         btnAsistencias.Click += BtnAsistencias_Click;
 
-        btnModuloEnrolar.Text = "Enrolar / Actualizar Huella";
+        btnModuloEnrolar.Text = "Actualizar Huella";
         btnModuloEnrolar.Size = new Size(220, 36);
         btnModuloEnrolar.Location = new Point(this.Width - 520, 12);
         btnModuloEnrolar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
