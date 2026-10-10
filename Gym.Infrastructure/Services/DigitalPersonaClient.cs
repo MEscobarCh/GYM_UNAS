@@ -18,6 +18,8 @@ public class DigitalPersonaClient : IBiometricoClient, DPFP.Capture.EventHandler
     private Verification? _verificator;
     private TaskCompletionSource<FeatureSet?>? _authTcs;
 
+    public event EventHandler<object>? OnHuellaDetectada;
+
     public void InicializarLector()
     {
         try
@@ -124,14 +126,51 @@ public class DigitalPersonaClient : IBiometricoClient, DPFP.Capture.EventHandler
 
         if (feedback == CaptureFeedback.Good)
         {
-            // Completar la tarea de identificación con éxito
+            // Completar la tarea de identificación con éxito (Legacy / Opcional)
             _authTcs?.TrySetResult(features);
+
+            // Emitir evento continuo
+            OnHuellaDetectada?.Invoke(this, features);
         }
         else
         {
             // Completar con nulo si la muestra es de mala calidad
             _authTcs?.TrySetResult(null);
         }
+    }
+
+    public Persona? IdentificarDesdeFeatureSet(object featureSetObj, IEnumerable<Persona> personasConHuella)
+    {
+        if (featureSetObj is not FeatureSet featureSet) return null;
+        if (_verificator == null) _verificator = new Verification();
+
+        foreach (var persona in personasConHuella)
+        {
+            if (string.IsNullOrEmpty(persona.Huella)) continue;
+
+            try
+            {
+                byte[] templateBytes = Convert.FromBase64String(persona.Huella);
+                using (MemoryStream ms = new MemoryStream(templateBytes))
+                {
+                    Template templateBD = new Template(ms);
+
+                    Verification.Result result = new Verification.Result();
+                    _verificator.Verify(featureSet, templateBD, ref result);
+
+                    if (result.Verified)
+                    {
+                        return persona;
+                    }
+                }
+            }
+            catch
+            {
+                // Ignorar errores de un template particular corrupto
+                continue;
+            }
+        }
+        return null;
     }
 
     public void OnFingerGone(object Capture, string ReaderSerialNumber) { }

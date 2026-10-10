@@ -227,10 +227,11 @@ public class RegistroExternoForm : Form
 
     private void BtnCapturarHuella_Click(object? sender, EventArgs e)
     {
-        using var capturaForm = new CapturaHuellaForm();
-        if (capturaForm.ShowDialog() == DialogResult.OK)
+        using var enrolamientoForm = new EnrolamientoForm(_personaRepository);
+        enrolamientoForm.InicializarParaCapturaLibre();
+        if (enrolamientoForm.ShowDialog() == DialogResult.OK)
         {
-            _huellaSimulada = capturaForm.TemplateCapturado;
+            _huellaSimulada = enrolamientoForm.TemplateCapturado;
             lblHuellaEstado.Text = "Huella: Capturada";
             lblHuellaEstado.ForeColor = ColorTranslator.FromHtml("#005C3A"); // Verde
         }

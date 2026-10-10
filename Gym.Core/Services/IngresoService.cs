@@ -37,4 +37,9 @@ public class IngresoService
 
         await _ingresoRepository.CrearAsync(ingreso);
     }
+
+    public Task<System.Collections.Generic.IEnumerable<Gym.Core.DTOs.IngresoDto>> ObtenerHistorialAsync(DateTime fechaInicio, DateTime fechaFin, string filtroTexto)
+    {
+        return _ingresoRepository.ObtenerHistorialAsync(fechaInicio, fechaFin, filtroTexto);
+    }
 }

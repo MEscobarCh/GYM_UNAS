@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Gym.Core.Services;
 using Gym.Core.Entities;
+using Gym.Core.Interfaces;
 using System.Threading.Tasks;
 
 namespace Gym.UI;
@@ -11,7 +12,8 @@ public class PagoForm : Form
 {
     private readonly TarifaService _tarifaService;
     private readonly PagoService _pagoService;
-    private readonly int _idPersona;
+    private readonly IPersonaRepository _personaRepository;
+    private int _idPersona;
     private readonly int _idUsuario;
     private decimal _montoActual = 0;
 
@@ -19,6 +21,11 @@ public class PagoForm : Form
     private Panel panelTop = new();
     private Label lblTitulo = new();
     private Button btnCerrar = new();
+
+    private Label lblDni = new();
+    private TextBox txtDni = new();
+    private Button btnBuscar = new();
+    private Label lblNombres = new();
 
     private Label lblTipoPase = new();
     private ComboBox cbTipoPase = new();
@@ -40,12 +47,14 @@ public class PagoForm : Form
     {
         _tarifaService = null!;
         _pagoService = null!;
+        _personaRepository = null!;
     }
 
-    public PagoForm(TarifaService tarifaService, PagoService pagoService, int idPersona, int idUsuario)
+    public PagoForm(TarifaService tarifaService, PagoService pagoService, IPersonaRepository personaRepository, int idPersona, int idUsuario)
     {
         _tarifaService = tarifaService;
         _pagoService = pagoService;
+        _personaRepository = personaRepository;
         _idPersona = idPersona;
         _idUsuario = idUsuario;
         
@@ -56,7 +65,7 @@ public class PagoForm : Form
     private void ConfigurarUI()
     {
         this.Text = "Registrar Pago - Externo";
-        this.Size = new Size(400, 500);
+        this.Size = new Size(400, 600);
         this.StartPosition = FormStartPosition.CenterParent;
         this.BackColor = Color.White;
         this.FormBorderStyle = FormBorderStyle.None;
@@ -90,6 +99,37 @@ public class PagoForm : Form
         int spacing = 60;
         int leftX = 30;
 
+        lblDni.Text = "DNI del Alumno / Externo:";
+        lblDni.Font = new Font("Segoe UI", 10);
+        lblDni.Location = new Point(leftX, startY);
+        lblDni.AutoSize = true;
+        this.Controls.Add(lblDni);
+
+        txtDni.Location = new Point(leftX, startY + 20);
+        txtDni.Size = new Size(200, 30);
+        txtDni.Font = new Font("Segoe UI", 11);
+        this.Controls.Add(txtDni);
+
+        btnBuscar.Text = "Buscar";
+        btnBuscar.Location = new Point(leftX + 210, startY + 19);
+        btnBuscar.Size = new Size(130, 30);
+        btnBuscar.BackColor = ColorTranslator.FromHtml("#005C3A");
+        btnBuscar.ForeColor = Color.White;
+        btnBuscar.FlatStyle = FlatStyle.Flat;
+        btnBuscar.FlatAppearance.BorderSize = 0;
+        btnBuscar.Cursor = Cursors.Hand;
+        btnBuscar.Click += BtnBuscar_Click;
+        this.Controls.Add(btnBuscar);
+
+        lblNombres.Text = "---";
+        lblNombres.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+        lblNombres.ForeColor = ColorTranslator.FromHtml("#005C3A");
+        lblNombres.Location = new Point(leftX, startY + 55);
+        lblNombres.Size = new Size(340, 20);
+        this.Controls.Add(lblNombres);
+
+        startY += 85;
+
         lblTipoPase.Text = "Tipo de Pase:";
         lblTipoPase.Font = new Font("Segoe UI", 10);
         lblTipoPase.Location = new Point(leftX, startY);
@@ -120,7 +160,7 @@ public class PagoForm : Form
 
         startY += spacing;
 
-        lblNroOperacion.Text = "Nro. Operación:";
+        lblNroOperacion.Text = "Nro. Operación (Solo YAPE):";
         lblNroOperacion.Font = new Font("Segoe UI", 10);
         lblNroOperacion.Location = new Point(leftX, startY);
         lblNroOperacion.AutoSize = true;
@@ -128,7 +168,7 @@ public class PagoForm : Form
         txtNroOperacion.Location = new Point(leftX, startY + 20);
         txtNroOperacion.Size = new Size(340, 30);
         txtNroOperacion.Font = new Font("Segoe UI", 11);
-        txtNroOperacion.Enabled = false; // Deshabilitado por defecto asumiendo EFECTIVO
+        txtNroOperacion.Enabled = false; 
 
         startY += spacing;
 
@@ -185,10 +225,58 @@ public class PagoForm : Form
         this.Controls.Add(btnCancelar);
     }
 
-    private void PagoForm_Load(object? sender, EventArgs e)
+    private async void PagoForm_Load(object? sender, EventArgs e)
     {
         cbMetodoPago.SelectedIndex = 0; // EFECTIVO
         cbTipoPase.SelectedIndex = 0; // Diario, disparar evento y cargar tarifa
+
+        if (_idPersona > 0)
+        {
+            txtDni.Enabled = false;
+            btnBuscar.Enabled = false;
+            try
+            {
+                var persona = await _personaRepository.ObtenerPorIdAsync(_idPersona);
+                if (persona != null)
+                {
+                    txtDni.Text = persona.Dni;
+                    lblNombres.Text = persona.Nombres;
+                }
+            }
+            catch { }
+        }
+    }
+
+    private async void BtnBuscar_Click(object? sender, EventArgs e)
+    {
+        string dni = txtDni.Text.Trim();
+        if (string.IsNullOrEmpty(dni)) return;
+
+        btnBuscar.Enabled = false;
+        try
+        {
+            var persona = await _personaRepository.ObtenerPorDniAsync(dni);
+            if (persona != null)
+            {
+                _idPersona = persona.Id;
+                lblNombres.Text = persona.Nombres;
+                lblError.Text = "";
+            }
+            else
+            {
+                _idPersona = 0;
+                lblNombres.Text = "No encontrado.";
+                lblError.Text = "Persona no registrada. Registre al alumno primero.";
+            }
+        }
+        catch (Exception ex)
+        {
+            lblError.Text = "Error al buscar: " + ex.Message;
+        }
+        finally
+        {
+            btnBuscar.Enabled = true;
+        }
     }
 
     private void CbMetodoPago_SelectedIndexChanged(object? sender, EventArgs e)
@@ -232,6 +320,12 @@ public class PagoForm : Form
 
     private async void BtnProcesar_Click(object? sender, EventArgs e)
     {
+        if (_idPersona <= 0)
+        {
+            lblError.Text = "Busque un alumno o externo válido.";
+            return;
+        }
+
         btnProcesar.Enabled = false;
         lblError.Text = "Procesando...";
         lblError.ForeColor = Color.Gray;

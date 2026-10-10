@@ -11,4 +11,7 @@ public interface IBiometricoClient
     Task<string?> IniciarCapturaAsync();
     
     Task<Persona?> IdentificarPersonaAsync(IEnumerable<Persona> personasConHuella);
+
+    event System.EventHandler<object> OnHuellaDetectada;
+    Persona? IdentificarDesdeFeatureSet(object featureSet, IEnumerable<Persona> personasConHuella);
 }

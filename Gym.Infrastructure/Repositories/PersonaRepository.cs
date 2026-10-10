@@ -22,7 +22,7 @@ public class PersonaRepository : IPersonaRepository
         using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        const string query = "SELECT id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella, codigo FROM persona WHERE dni = @dni LIMIT 1";
+        const string query = "SELECT id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella FROM persona WHERE dni = @dni LIMIT 1";
         
         using var command = new MySqlCommand(query, connection);
         command.Parameters.AddWithValue("@dni", dni);
@@ -40,7 +40,7 @@ public class PersonaRepository : IPersonaRepository
         using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        const string query = "SELECT id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella, codigo FROM persona WHERE id = @id LIMIT 1";
+        const string query = "SELECT id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella FROM persona WHERE id = @id LIMIT 1";
         
         using var command = new MySqlCommand(query, connection);
         command.Parameters.AddWithValue("@id", id);
@@ -63,7 +63,7 @@ public class PersonaRepository : IPersonaRepository
         await connection.OpenAsync();
 
         var inClause = string.Join(",", dniList.Select((_, i) => $"@p{i}"));
-        var query = $"SELECT id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella, codigo FROM persona WHERE dni IN ({inClause})";
+        var query = $"SELECT id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella FROM persona WHERE dni IN ({inClause})";
 
         using var command = new MySqlCommand(query, connection);
         for (int i = 0; i < dniList.Count; i++)
@@ -89,8 +89,8 @@ public class PersonaRepository : IPersonaRepository
         await connection.OpenAsync();
 
         const string query = @"
-            INSERT INTO persona (id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella, codigo) 
-            VALUES (@id, @dni, @nombres, @sexo, @telefono, @correo, @fecha_registro, @estado, @huella, @codigo)";
+            INSERT INTO persona (id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella) 
+            VALUES (@id, @dni, @nombres, @sexo, @telefono, @correo, @fecha_registro, @estado, @huella)";
 
         using var command = new MySqlCommand(query, connection);
         command.Parameters.AddWithValue("@id", persona.Id);
@@ -102,7 +102,6 @@ public class PersonaRepository : IPersonaRepository
         command.Parameters.AddWithValue("@fecha_registro", persona.FechaRegistro ?? (object)DBNull.Value);
         command.Parameters.AddWithValue("@estado", persona.Estado ?? (object)DBNull.Value);
         command.Parameters.AddWithValue("@huella", persona.Huella ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue("@codigo", persona.Codigo ?? (object)DBNull.Value);
 
         await command.ExecuteNonQueryAsync();
     }
@@ -113,8 +112,8 @@ public class PersonaRepository : IPersonaRepository
         await connection.OpenAsync();
 
         const string query = @"
-            INSERT INTO persona (dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella, codigo) 
-            VALUES (@dni, @nombres, @sexo, @telefono, @correo, @fecha_registro, @estado, @huella, @codigo);
+            INSERT INTO persona (dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella) 
+            VALUES (@dni, @nombres, @sexo, @telefono, @correo, @fecha_registro, @estado, @huella);
             SELECT LAST_INSERT_ID();";
 
         using var command = new MySqlCommand(query, connection);
@@ -126,7 +125,6 @@ public class PersonaRepository : IPersonaRepository
         command.Parameters.AddWithValue("@fecha_registro", persona.FechaRegistro ?? (object)DBNull.Value);
         command.Parameters.AddWithValue("@estado", persona.Estado ?? (object)DBNull.Value);
         command.Parameters.AddWithValue("@huella", persona.Huella ?? (object)DBNull.Value);
-        command.Parameters.AddWithValue("@codigo", persona.Codigo ?? (object)DBNull.Value);
 
         var result = await command.ExecuteScalarAsync();
         return Convert.ToInt32(result);
@@ -151,7 +149,7 @@ public class PersonaRepository : IPersonaRepository
         using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
 
-        const string query = "SELECT id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella, codigo FROM persona WHERE huella IS NOT NULL AND huella != ''";
+        const string query = "SELECT id, dni, nombres, sexo, telefono, correo, fecha_registro, estado, huella FROM persona WHERE huella IS NOT NULL AND huella != ''";
         
         using var command = new MySqlCommand(query, connection);
         using var reader = await command.ExecuteReaderAsync();
@@ -175,8 +173,7 @@ public class PersonaRepository : IPersonaRepository
             Correo = reader.IsDBNull(reader.GetOrdinal("correo")) ? null : reader.GetString("correo"),
             FechaRegistro = reader.IsDBNull(reader.GetOrdinal("fecha_registro")) ? null : reader.GetDateTime("fecha_registro"),
             Estado = reader.IsDBNull(reader.GetOrdinal("estado")) ? null : reader.GetInt32("estado"),
-            Huella = reader.IsDBNull(reader.GetOrdinal("huella")) ? null : reader.GetString("huella"),
-            Codigo = reader.IsDBNull(reader.GetOrdinal("codigo")) ? null : reader.GetString("codigo")
+            Huella = reader.IsDBNull(reader.GetOrdinal("huella")) ? null : reader.GetString("huella")
         };
     }
 }

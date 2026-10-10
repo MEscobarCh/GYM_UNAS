@@ -21,7 +21,7 @@ public class AuditoriaRepository : IAuditoriaRepository
         await connection.OpenAsync();
 
         const string query = @"
-            INSERT INTO auditoria (id_usuario, accion, detalle, fecha_hora) 
+            INSERT INTO auditoria (id_usuario_admin, accion, detalle, fecha) 
             VALUES (@id_usuario, @accion, @detalle, @fecha_hora)";
 
         using var command = new MySqlCommand(query, connection);

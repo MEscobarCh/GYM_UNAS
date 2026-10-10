@@ -5,6 +5,8 @@ using Gym.Core.Services;
 using System.Linq; // Necesario para ToList()
 using Microsoft.Extensions.DependencyInjection;
 using Gym.Core.Interfaces;
+using System.Threading.Channels;
+using System.Text;
 
 namespace Gym.UI;
 
@@ -20,8 +22,8 @@ public class DashboardForm : Form
     // UI Controls
     private Panel panelTop = new();
     private Label lblTitulo = new();
-    private Button btnCerrar = new();
     private Button btnCaja = new();
+    private Button btnAsistencias = new();
     private Button btnModuloEnrolar = new();
     
     // Panel de Sincronización
@@ -39,6 +41,10 @@ public class DashboardForm : Form
     private Button btnEnrolarHuella = new();
     private Button btnIngresoHuella = new();
     private int _ultimoIdPersonaEscaneado = 0;
+
+    // FASE 2: Motor de Lectura Continua
+    private readonly Channel<string> _lecturasChannel = Channel.CreateUnbounded<string>();
+    private readonly StringBuilder _barcodeBuffer = new StringBuilder();
 
     // Constructor sin parámetros por si el Designer de VS lo necesita
     public DashboardForm()
@@ -69,133 +75,158 @@ public class DashboardForm : Form
     private void ConfigurarUI()
     {
         this.Text = "Gym UNAS - Dashboard";
-        this.Size = new Size(800, 600);
+        this.MinimumSize = new Size(1024, 768);
         this.StartPosition = FormStartPosition.CenterScreen;
-        this.BackColor = Color.White;
-        this.FormBorderStyle = FormBorderStyle.None;
+        this.BackColor = ColorTranslator.FromHtml("#F0F2F5");
+        this.WindowState = FormWindowState.Maximized;
 
         // Top Panel
-        panelTop.BackColor = ColorTranslator.FromHtml("#005C3A"); // Verde institucional
+        panelTop.BackColor = ColorTranslator.FromHtml("#005C3A");
         panelTop.Dock = DockStyle.Top;
-        panelTop.Height = 50;
+        panelTop.Height = 60;
+        panelTop.Width = this.Width; 
 
-        lblTitulo.Text = "DASHBOARD";
-        lblTitulo.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+        lblTitulo.Text = "GYM UNAS - DASHBOARD";
+        lblTitulo.Font = new Font("Segoe UI", 16, FontStyle.Bold);
         lblTitulo.ForeColor = Color.White;
         lblTitulo.AutoSize = true;
-        lblTitulo.Location = new Point(20, 10);
-        
-        btnCerrar.Text = "X";
-        btnCerrar.Size = new Size(40, 40);
-        btnCerrar.Location = new Point(this.Width - 40, 5);
-        btnCerrar.FlatStyle = FlatStyle.Flat;
-        btnCerrar.FlatAppearance.BorderSize = 0;
-        btnCerrar.ForeColor = Color.White;
-        btnCerrar.Font = new Font("Segoe UI", 12, FontStyle.Bold);
-        btnCerrar.Cursor = Cursors.Hand;
-        btnCerrar.Click += (s, e) => this.Close();
+        lblTitulo.Location = new Point(20, 15);
 
-        btnCaja.Text = "Caja e Historial";
-        btnCaja.Size = new Size(150, 30);
-        btnCaja.Location = new Point(this.Width - 200, 10);
+        btnCaja.Text = "Caja";
+        btnCaja.Size = new Size(100, 36);
+        btnCaja.Location = new Point(this.Width - 160, 12);
+        btnCaja.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnCaja.FlatStyle = FlatStyle.Flat;
         btnCaja.FlatAppearance.BorderSize = 1;
         btnCaja.FlatAppearance.BorderColor = Color.White;
         btnCaja.ForeColor = Color.White;
+        btnCaja.BackColor = ColorTranslator.FromHtml("#004A2E");
         btnCaja.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnCaja.Cursor = Cursors.Hand;
         btnCaja.Click += BtnCaja_Click;
 
+        btnAsistencias.Text = "Asistencias";
+        btnAsistencias.Size = new Size(120, 36);
+        btnAsistencias.Location = new Point(this.Width - 290, 12);
+        btnAsistencias.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        btnAsistencias.FlatStyle = FlatStyle.Flat;
+        btnAsistencias.FlatAppearance.BorderSize = 1;
+        btnAsistencias.FlatAppearance.BorderColor = Color.White;
+        btnAsistencias.ForeColor = Color.White;
+        btnAsistencias.BackColor = ColorTranslator.FromHtml("#004A2E");
+        btnAsistencias.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+        btnAsistencias.Cursor = Cursors.Hand;
+        btnAsistencias.Click += BtnAsistencias_Click;
+
         btnModuloEnrolar.Text = "Enrolar / Actualizar Huella";
-        btnModuloEnrolar.Size = new Size(220, 30);
-        btnModuloEnrolar.Location = new Point(this.Width - 430, 10);
+        btnModuloEnrolar.Size = new Size(220, 36);
+        btnModuloEnrolar.Location = new Point(this.Width - 520, 12);
+        btnModuloEnrolar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnModuloEnrolar.FlatStyle = FlatStyle.Flat;
         btnModuloEnrolar.FlatAppearance.BorderSize = 1;
         btnModuloEnrolar.FlatAppearance.BorderColor = Color.White;
         btnModuloEnrolar.ForeColor = Color.White;
+        btnModuloEnrolar.BackColor = ColorTranslator.FromHtml("#004A2E");
         btnModuloEnrolar.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnModuloEnrolar.Cursor = Cursors.Hand;
         btnModuloEnrolar.Click += BtnModuloEnrolar_Click;
 
         panelTop.Controls.Add(lblTitulo);
         panelTop.Controls.Add(btnModuloEnrolar);
+        panelTop.Controls.Add(btnAsistencias);
         panelTop.Controls.Add(btnCaja);
-        panelTop.Controls.Add(btnCerrar);
 
-        // Content - Sincronización
+        // Usamos un TableLayoutPanel central para centrar el contenido en pantalla completa
+        TableLayoutPanel layoutCenter = new TableLayoutPanel();
+        layoutCenter.Dock = DockStyle.Fill;
+        layoutCenter.ColumnCount = 3;
+        layoutCenter.RowCount = 3;
+        layoutCenter.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        layoutCenter.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 850F)); // Ancho fijo del contenedor
+        layoutCenter.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+        layoutCenter.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+        layoutCenter.RowStyles.Add(new RowStyle(SizeType.Absolute, 620F)); // Alto fijo del contenedor
+        layoutCenter.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+
+        Panel mainContainer = new Panel();
+        mainContainer.Dock = DockStyle.Fill;
+        mainContainer.BackColor = Color.Transparent;
+
+        // Content - Sincronización (Tarjeta 1)
+        Panel cardSincronizacion = new Panel();
+        cardSincronizacion.Size = new Size(850, 140);
+        cardSincronizacion.Location = new Point(0, 0);
+        cardSincronizacion.BackColor = Color.White;
+        cardSincronizacion.BorderStyle = BorderStyle.FixedSingle; // Simular borde de tarjeta
+        
         lblSeleccion.Text = "Seleccione el Ciclo Académico:";
-        lblSeleccion.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-        lblSeleccion.Location = new Point(50, 80);
+        lblSeleccion.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+        lblSeleccion.Location = new Point(25, 25);
         lblSeleccion.AutoSize = true;
 
-        cmbCiclos.Location = new Point(50, 110);
-        cmbCiclos.Size = new Size(300, 30);
-        cmbCiclos.Font = new Font("Segoe UI", 11);
+        cmbCiclos.Location = new Point(25, 55);
+        cmbCiclos.Size = new Size(400, 30);
+        cmbCiclos.Font = new Font("Segoe UI", 12);
         cmbCiclos.DropDownStyle = ComboBoxStyle.DropDownList;
         cmbCiclos.DisplayMember = "Nombre";
         cmbCiclos.ValueMember = "Id";
         cmbCiclos.FlatStyle = FlatStyle.Flat;
-        cmbCiclos.BackColor = Color.WhiteSmoke;
+        cmbCiclos.BackColor = ColorTranslator.FromHtml("#F8F9FA");
 
         btnActualizarCache.Text = "Actualizar Lista OCDA";
         btnActualizarCache.BackColor = ColorTranslator.FromHtml("#005C3A");
         btnActualizarCache.ForeColor = Color.White;
         btnActualizarCache.FlatStyle = FlatStyle.Flat;
         btnActualizarCache.FlatAppearance.BorderSize = 0;
-        btnActualizarCache.Size = new Size(200, 40);
-        btnActualizarCache.Location = new Point(370, 105);
+        btnActualizarCache.Size = new Size(220, 36);
+        btnActualizarCache.Location = new Point(445, 53);
         btnActualizarCache.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnActualizarCache.Cursor = Cursors.Hand;
         btnActualizarCache.Click += BtnActualizarCache_Click;
 
         lblEstado.Text = "Estado: Esperando...";
-        lblEstado.Font = new Font("Segoe UI", 9, FontStyle.Italic);
+        lblEstado.Font = new Font("Segoe UI", 10, FontStyle.Italic);
         lblEstado.ForeColor = Color.Gray;
         lblEstado.AutoSize = true;
-        lblEstado.Location = new Point(50, 150);
+        lblEstado.Location = new Point(25, 100);
 
-        // Panel de Validación
-        panelValidacion.Location = new Point(50, 200);
-        panelValidacion.Size = new Size(700, 350);
-        panelValidacion.BackColor = Color.WhiteSmoke;
+        cardSincronizacion.Controls.Add(lblSeleccion);
+        cardSincronizacion.Controls.Add(cmbCiclos);
+        cardSincronizacion.Controls.Add(btnActualizarCache);
+        cardSincronizacion.Controls.Add(lblEstado);
+
+        // Panel de Validación (Tarjeta 2)
+        panelValidacion.Location = new Point(0, 160);
+        panelValidacion.Size = new Size(850, 450);
+        panelValidacion.BackColor = Color.White;
+        panelValidacion.BorderStyle = BorderStyle.FixedSingle;
         
-        lblValidacionTitulo.Text = "Validar ingreso";
-        lblValidacionTitulo.Font = new Font("Segoe UI", 14, FontStyle.Bold);
-        lblValidacionTitulo.Location = new Point(20, 20);
+        lblValidacionTitulo.Text = "Validación de Ingreso";
+        lblValidacionTitulo.Font = new Font("Segoe UI", 18, FontStyle.Bold);
+        lblValidacionTitulo.ForeColor = ColorTranslator.FromHtml("#333333");
+        lblValidacionTitulo.Location = new Point(25, 25);
         lblValidacionTitulo.AutoSize = true;
         
         lblInstruccion.Text = "Escanee el código de barras o ingrese el DNI:";
-        lblInstruccion.Font = new Font("Segoe UI", 11);
-        lblInstruccion.Location = new Point(20, 70);
+        lblInstruccion.Font = new Font("Segoe UI", 12);
+        lblInstruccion.ForeColor = ColorTranslator.FromHtml("#555555");
+        lblInstruccion.Location = new Point(25, 75);
         lblInstruccion.AutoSize = true;
 
-        txtEscaner.Location = new Point(20, 100);
-        txtEscaner.Size = new Size(400, 40);
-        txtEscaner.Font = new Font("Segoe UI", 16);
-        txtEscaner.KeyDown += TxtEscaner_KeyDown;
+        txtEscaner.Location = new Point(25, 110);
+        txtEscaner.Size = new Size(500, 40);
+        txtEscaner.Font = new Font("Segoe UI", 18);
+        txtEscaner.BackColor = Color.White;
+        txtEscaner.BorderStyle = BorderStyle.FixedSingle;
+        txtEscaner.ReadOnly = true; // El motor continuo escribe aquí
 
-        lblResultado.Location = new Point(20, 170);
-        lblResultado.Size = new Size(660, 100);
-        lblResultado.Font = new Font("Segoe UI", 18, FontStyle.Bold);
-        lblResultado.TextAlign = ContentAlignment.MiddleCenter;
-        lblResultado.ForeColor = Color.White;
-        lblResultado.Visible = false; // Oculto al inicio
+        // FASE 2: Interceptar todo el teclado a nivel Form
+        this.KeyPreview = true;
+        this.KeyPress += DashboardForm_KeyPress;
 
-        btnEnrolarHuella.Text = "Registrar Huella";
-        btnEnrolarHuella.Size = new Size(200, 40);
-        btnEnrolarHuella.Location = new Point(460, 100);
-        btnEnrolarHuella.BackColor = Color.SlateGray;
-        btnEnrolarHuella.ForeColor = Color.White;
-        btnEnrolarHuella.FlatStyle = FlatStyle.Flat;
-        btnEnrolarHuella.FlatAppearance.BorderSize = 0;
-        btnEnrolarHuella.Font = new Font("Segoe UI", 11, FontStyle.Bold);
-        btnEnrolarHuella.Cursor = Cursors.Hand;
-        btnEnrolarHuella.Visible = false;
-        btnEnrolarHuella.Click += BtnEnrolarHuella_Click;
-
-        btnIngresoHuella.Text = "Ingreso por Huella (F2)";
-        btnIngresoHuella.Size = new Size(220, 40);
-        btnIngresoHuella.Location = new Point(440, 100);
+        btnIngresoHuella.Text = "Activar Lector de Puerta (F2)";
+        btnIngresoHuella.Size = new Size(270, 40);
+        btnIngresoHuella.Location = new Point(545, 110);
         btnIngresoHuella.BackColor = ColorTranslator.FromHtml("#005C3A");
         btnIngresoHuella.ForeColor = Color.White;
         btnIngresoHuella.FlatStyle = FlatStyle.Flat;
@@ -204,20 +235,40 @@ public class DashboardForm : Form
         btnIngresoHuella.Cursor = Cursors.Hand;
         btnIngresoHuella.Click += BtnIngresoHuella_Click;
 
-        panelValidacion.Controls.Add(btnIngresoHuella);
+        btnEnrolarHuella.Text = "Registrar Huella (Escaneado)";
+        btnEnrolarHuella.Size = new Size(270, 40);
+        btnEnrolarHuella.Location = new Point(545, 165);
+        btnEnrolarHuella.BackColor = ColorTranslator.FromHtml("#6C757D"); 
+        btnEnrolarHuella.ForeColor = Color.White;
+        btnEnrolarHuella.FlatStyle = FlatStyle.Flat;
+        btnEnrolarHuella.FlatAppearance.BorderSize = 0;
+        btnEnrolarHuella.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+        btnEnrolarHuella.Cursor = Cursors.Hand;
+        btnEnrolarHuella.Visible = false;
+        btnEnrolarHuella.Click += BtnEnrolarHuella_Click;
 
-        panelValidacion.Controls.Add(btnEnrolarHuella);
+        lblResultado.Location = new Point(25, 230);
+        lblResultado.Size = new Size(790, 180);
+        lblResultado.Font = new Font("Segoe UI", 24, FontStyle.Bold);
+        lblResultado.TextAlign = ContentAlignment.MiddleCenter;
+        lblResultado.ForeColor = Color.White;
+        lblResultado.BackColor = Color.LightGray; 
+        lblResultado.Visible = false; 
+
         panelValidacion.Controls.Add(lblValidacionTitulo);
         panelValidacion.Controls.Add(lblInstruccion);
         panelValidacion.Controls.Add(txtEscaner);
+        panelValidacion.Controls.Add(btnIngresoHuella);
+        panelValidacion.Controls.Add(btnEnrolarHuella);
         panelValidacion.Controls.Add(lblResultado);
 
+        mainContainer.Controls.Add(cardSincronizacion);
+        mainContainer.Controls.Add(panelValidacion);
+
+        layoutCenter.Controls.Add(mainContainer, 1, 1); // Agregar a la celda central
+
+        this.Controls.Add(layoutCenter);
         this.Controls.Add(panelTop);
-        this.Controls.Add(lblSeleccion);
-        this.Controls.Add(cmbCiclos);
-        this.Controls.Add(btnActualizarCache);
-        this.Controls.Add(lblEstado);
-        this.Controls.Add(panelValidacion);
     }
 
     private async void DashboardForm_Load(object? sender, EventArgs e)
@@ -229,10 +280,10 @@ public class DashboardForm : Form
             
             cmbCiclos.DataSource = ciclos.ToList();
             lblEstado.Text = $"Ciclos cargados correctamente a las {DateTime.Now:HH:mm:ss}";
-            txtEscaner.Focus(); // Mantener foco
-
-            }
-
+            
+            // FASE 2: Iniciar motor continuo
+            _ = MotorValidacionAsync();
+        }
         catch (Exception ex)
         {
             lblEstado.Text = "Error al sincronizar ciclos: " + ex.Message;
@@ -245,38 +296,123 @@ public class DashboardForm : Form
         _biometricoClient.DetenerLector();
     }
 
-    private async void BtnIngresoHuella_Click(object? sender, EventArgs e)
+    private bool _lectorHuellaActivo = false;
+
+    private void BtnIngresoHuella_Click(object? sender, EventArgs e)
+    {
+        if (!_lectorHuellaActivo)
+        {
+            try
+            {
+                _biometricoClient.OnHuellaDetectada -= BiometricoClient_OnHuellaDetectada;
+                _biometricoClient.OnHuellaDetectada += BiometricoClient_OnHuellaDetectada;
+                _biometricoClient.InicializarLector();
+                _lectorHuellaActivo = true;
+
+                btnIngresoHuella.Text = "Desactivar Lector";
+                btnIngresoHuella.BackColor = Color.Red;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al activar lector: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        else
+        {
+            try
+            {
+                _biometricoClient.DetenerLector();
+                _biometricoClient.OnHuellaDetectada -= BiometricoClient_OnHuellaDetectada;
+            }
+            catch { }
+
+            _lectorHuellaActivo = false;
+            btnIngresoHuella.Text = "Activar Lector de Puerta (F2)";
+            btnIngresoHuella.BackColor = ColorTranslator.FromHtml("#005C3A");
+        }
+    }
+
+    private void BiometricoClient_OnHuellaDetectada(object? sender, object featureSet)
+    {
+        // Se ejecuta en el background thread del SDK de DigitalPersona
+        // Usamos BeginInvoke (fire-and-forget) para no bloquear la captura de nuevas huellas
+        if (this.InvokeRequired)
+        {
+            this.BeginInvoke(new Action(async () => await ProcesarMatchHuellaAsync(featureSet)));
+        }
+        else
+        {
+            _ = ProcesarMatchHuellaAsync(featureSet);
+        }
+    }
+
+    private async Task ProcesarMatchHuellaAsync(object featureSet)
     {
         try
         {
-            btnIngresoHuella.Enabled = false;
-            btnIngresoHuella.Text = "Esperando lectura...";
-            btnIngresoHuella.BackColor = Color.Orange;
-
             var personasConHuella = await _personaRepository.ObtenerTodasConHuellaAsync();
-            var personaMatch = await _biometricoClient.IdentificarPersonaAsync(personasConHuella);
+            var personaMatch = _biometricoClient.IdentificarDesdeFeatureSet(featureSet, personasConHuella);
 
             if (personaMatch != null && !string.IsNullOrEmpty(personaMatch.Dni))
             {
-                await ProcesarIngresoAsync(personaMatch.Dni);
+                if (cmbCiclos.SelectedValue is int idCiclo)
+                {
+                    _ultimoIdPersonaEscaneado = personaMatch.Id;
+                    btnEnrolarHuella.Visible = true;
+
+                    // Validar si es ALUMNO o EXTERNO
+                    string tipoPersona = await _clasificacionService.DeterminarTipoPersonaAsync(personaMatch.Dni, idCiclo);
+                    bool accesoPermitido = false;
+                    string mensajeAcceso = "";
+
+                    if (tipoPersona == "ALUMNO")
+                    {
+                        accesoPermitido = true;
+                        mensajeAcceso = $"{personaMatch.Nombres} - Acceso Permitido (ALUMNO)";
+                    }
+                    else
+                    {
+                        var suscripcionService = _serviceProvider.GetRequiredService<SuscripcionService>();
+                        var suscripcionVigente = await suscripcionService.ObtenerSuscripcionVigenteAsync(personaMatch.Id);
+                        if (suscripcionVigente != null)
+                        {
+                            accesoPermitido = true;
+                            mensajeAcceso = $"{personaMatch.Nombres} - Acceso Permitido (EXTERNO Activo)";
+                        }
+                    }
+
+                    if (accesoPermitido)
+                    {
+                        await _ingresoService.RegistrarIngresoAlumnoAsync(personaMatch.Dni, idCiclo, "HUELLA", 1);
+                        lblResultado.Text = mensajeAcceso;
+                        lblResultado.BackColor = ColorTranslator.FromHtml("#005C3A");
+                    }
+                    else
+                    {
+                        lblResultado.Text = "Membresía Vencida. Pase a Caja.";
+                        lblResultado.BackColor = Color.Red;
+                    }
+                    lblResultado.Visible = true;
+                }
+                else
+                {
+                    lblResultado.Text = "Seleccione un ciclo primero para registrar.";
+                    lblResultado.BackColor = Color.Orange;
+                    lblResultado.Visible = true;
+                }
             }
             else
             {
-                lblResultado.Text = "Huella no reconocida";
+                lblResultado.Text = "Huella no registrada o intente nuevamente";
                 lblResultado.BackColor = Color.Red;
                 lblResultado.Visible = true;
             }
         }
         catch (Exception ex)
         {
-            MessageBox.Show("Error en lector: " + ex.Message);
-        }
-        finally
-        {
-            btnIngresoHuella.Enabled = true;
-            btnIngresoHuella.Text = "Ingreso por Huella (F2)";
-            btnIngresoHuella.BackColor = ColorTranslator.FromHtml("#005C3A");
-            txtEscaner.Focus();
+            lblResultado.Text = "Error interno: " + ex.Message;
+            lblResultado.BackColor = Color.Red;
+            lblResultado.Visible = true;
         }
     }
 
@@ -290,41 +426,72 @@ public class DashboardForm : Form
         return base.ProcessCmdKey(ref msg, keyData);
     }
 
-    private void BtnEnrolarHuella_Click(object? sender, EventArgs e)
+    private async void BtnEnrolarHuella_Click(object? sender, EventArgs e)
     {
         if (_ultimoIdPersonaEscaneado <= 0) return;
+        
+        var persona = await _personaRepository.ObtenerPorIdAsync(_ultimoIdPersonaEscaneado);
+        if (persona == null) return;
+
+        bool estabaActivo = _lectorHuellaActivo;
+        if (estabaActivo)
+        {
+            _biometricoClient.DetenerLector();
+            _biometricoClient.OnHuellaDetectada -= BiometricoClient_OnHuellaDetectada;
+            _lectorHuellaActivo = false;
+            btnIngresoHuella.Text = "Activar Lector de Puerta (F2)";
+            btnIngresoHuella.BackColor = ColorTranslator.FromHtml("#005C3A");
+        }
+
         var enrolamientoForm = _serviceProvider.GetRequiredService<EnrolamientoForm>();
-        enrolamientoForm.Inicializar(_ultimoIdPersonaEscaneado);
+        enrolamientoForm.Inicializar(_ultimoIdPersonaEscaneado, persona.Dni ?? string.Empty, persona.Nombres ?? string.Empty);
         enrolamientoForm.ShowDialog();
+
+        if (estabaActivo)
+        {
+            _biometricoClient.OnHuellaDetectada += BiometricoClient_OnHuellaDetectada;
+            _biometricoClient.InicializarLector();
+            _lectorHuellaActivo = true;
+            btnIngresoHuella.Text = "Desactivar Lector";
+            btnIngresoHuella.BackColor = Color.Red;
+        }
     }
 
     private void BtnCaja_Click(object? sender, EventArgs e)
     {
-        var pagoService = _serviceProvider.GetRequiredService<PagoService>();
-        using var cajaForm = new CajaForm(pagoService);
+        using var cajaForm = new CajaForm(_serviceProvider);
         cajaForm.ShowDialog();
     }
 
-    private async void BtnModuloEnrolar_Click(object? sender, EventArgs e)
+    private void BtnAsistencias_Click(object? sender, EventArgs e)
     {
-        string input = Prompt.ShowDialog("Ingrese DNI o Código de la persona:", "Enrolamiento de Huella");
-        if (string.IsNullOrWhiteSpace(input)) return;
+        var ingresoService = _serviceProvider.GetRequiredService<IngresoService>();
+        using var asistenciasForm = new AsistenciasForm(ingresoService);
+        asistenciasForm.ShowDialog();
+    }
 
-        var persona = await _personaRepository.ObtenerPorDniAsync(input);
-        if (persona == null)
+    private void BtnModuloEnrolar_Click(object? sender, EventArgs e)
+    {
+        bool estabaActivo = _lectorHuellaActivo;
+        if (estabaActivo)
         {
-            MessageBox.Show("No se encontró ninguna persona con ese DNI o Código en la base de datos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            return;
+            _biometricoClient.DetenerLector();
+            _biometricoClient.OnHuellaDetectada -= BiometricoClient_OnHuellaDetectada;
+            _lectorHuellaActivo = false;
+            btnIngresoHuella.Text = "Activar Lector de Puerta (F2)";
+            btnIngresoHuella.BackColor = ColorTranslator.FromHtml("#005C3A");
         }
 
-        using var capturaForm = new CapturaHuellaForm();
-        if (capturaForm.ShowDialog() == DialogResult.OK)
+        var enrolamientoForm = _serviceProvider.GetRequiredService<EnrolamientoForm>();
+        enrolamientoForm.ShowDialog();
+
+        if (estabaActivo)
         {
-            if (!string.IsNullOrEmpty(capturaForm.TemplateCapturado))
-            {
-                await _personaRepository.ActualizarHuellaAsync(persona.Id, capturaForm.TemplateCapturado);
-                MessageBox.Show($"Huella actualizada correctamente para {persona.Nombres}.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            _biometricoClient.OnHuellaDetectada += BiometricoClient_OnHuellaDetectada;
+            _biometricoClient.InicializarLector();
+            _lectorHuellaActivo = true;
+            btnIngresoHuella.Text = "Desactivar Lector";
+            btnIngresoHuella.BackColor = Color.Red;
         }
     }
 
@@ -346,10 +513,8 @@ public class DashboardForm : Form
                 lblEstado.Text = $"Sincronizado y Reclasificado: {DateTime.Now:HH:mm:ss}";
                 lblEstado.ForeColor = ColorTranslator.FromHtml("#005C3A");
                 txtEscaner.Focus(); // Mantener foco
-
             }
-
-        catch (Exception ex)
+            catch (Exception ex)
             {
                 lblEstado.Text = "Error al actualizar caché: " + ex.Message;
                 lblEstado.ForeColor = Color.Red;
@@ -365,30 +530,64 @@ public class DashboardForm : Form
         }
     }
 
-    private async void TxtEscaner_KeyDown(object? sender, KeyEventArgs e)
+    private async Task MotorValidacionAsync()
     {
-        if (e.KeyCode == Keys.Enter)
+        var reader = _lecturasChannel.Reader;
+        // Bucle infinito, esperando lecturas sin bloquear la UI
+        while (await reader.WaitToReadAsync())
         {
+            if (reader.TryRead(out string? texto) && !string.IsNullOrEmpty(texto))
+            {
+                // Mostramos estado en UI
+                lblEstado.Text = $"Validando: {texto}...";
+                lblEstado.ForeColor = Color.Orange;
+                
+                await ProcesarIngresoAsync(texto);
+                
+                lblEstado.Text = "Esperando lectura...";
+                lblEstado.ForeColor = Color.Gray;
+            }
+        }
+    }
+
+    private void DashboardForm_KeyPress(object? sender, KeyPressEventArgs e)
+    {
+        if (e.KeyChar == (char)Keys.Enter)
+        {
+            string texto = _barcodeBuffer.ToString().Trim();
+            _barcodeBuffer.Clear();
+            txtEscaner.Text = ""; // Limpieza visual inmediata
+            
+            if (!string.IsNullOrEmpty(texto))
+            {
+                // Enviar a la cola para validación asíncrona
+                _lecturasChannel.Writer.TryWrite(texto);
+            }
             e.Handled = true;
-            e.SuppressKeyPress = true;
-
-            string texto = txtEscaner.Text.Trim();
-            if (string.IsNullOrEmpty(texto))
-                return;
-
-            await ProcesarIngresoAsync(texto);
+        }
+        else if (e.KeyChar == (char)Keys.Back)
+        {
+            if (_barcodeBuffer.Length > 0)
+            {
+                _barcodeBuffer.Length--;
+                txtEscaner.Text = _barcodeBuffer.ToString();
+            }
+            e.Handled = true;
+        }
+        else if (!char.IsControl(e.KeyChar))
+        {
+            _barcodeBuffer.Append(e.KeyChar);
+            txtEscaner.Text = _barcodeBuffer.ToString();
+            e.Handled = true;
         }
     }
 
     private async Task ProcesarIngresoAsync(string texto)
     {
-        txtEscaner.Text = texto;
-
-
-            if (cmbCiclos.SelectedValue is int idCicloSeleccionado)
+        if (cmbCiclos.SelectedValue is int idCicloSeleccionado)
+        {
+            try
             {
-                try
-                {
                     // Determinar tipo de persona
                     string resultado = await _clasificacionService.DeterminarTipoPersonaAsync(texto, idCicloSeleccionado);
 
@@ -453,8 +652,9 @@ public class DashboardForm : Form
                             // 3. No tiene suscripción activa, toca cobrar
                             var tarifaService = scope.ServiceProvider.GetRequiredService<TarifaService>();
                             var pagoService = scope.ServiceProvider.GetRequiredService<PagoService>();
+                            var personaRepository = scope.ServiceProvider.GetRequiredService<IPersonaRepository>();
                             
-                            using var pagoForm = new PagoForm(tarifaService, pagoService, idPersona, 1); // 1 = idUsuario hardcodeado por ahora
+                            using var pagoForm = new PagoForm(tarifaService, pagoService, personaRepository, idPersona, 1); // 1 = idUsuario hardcodeado por ahora
                             
                             if (pagoForm.ShowDialog() == DialogResult.OK)
                             {
@@ -479,19 +679,13 @@ public class DashboardForm : Form
                     lblResultado.BackColor = Color.Red;
                     lblResultado.Visible = true;
                 }
-                finally
-                {
-                    // Limpiar y mantener foco
-                    txtEscaner.Clear();
-                    txtEscaner.Focus();
-                }
             }
             else
             {
                 MessageBox.Show("Seleccione un ciclo primero.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-            }
-        } } 
-
+        }
+    }
+}
 
 
 
