@@ -65,15 +65,16 @@ public class PagoForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.Size = new Size(400, 600);
-        this.StartPosition = FormStartPosition.CenterParent;
+        this.ClientSize = new Size(400, 470);
+        this.MinimumSize = new Size(420, 510);
+        this.StartPosition = FormStartPosition.CenterScreen;
         this.BackColor = Color.White;
 
         // Top Panel
 
         // Controles Internos
-        int startY = 60;
-        int spacing = 60;
+        int startY = 25;
+        int spacing = 65;
         int leftX = 30;
 
         lblDni.Text = "DNI del Alumno / Externo:";
@@ -82,14 +83,14 @@ public class PagoForm : Form
         lblDni.AutoSize = true;
         this.Controls.Add(lblDni);
 
-        txtDni.Location = new Point(leftX, startY + 20);
+        txtDni.Location = new Point(leftX, startY + 27);
         txtDni.Size = new Size(200, 30);
         txtDni.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtDni.Font = new Font("Segoe UI", 11);
         this.Controls.Add(txtDni);
 
         btnBuscar.Text = "Buscar";
-        btnBuscar.Location = new Point(leftX + 210, startY + 19);
+        btnBuscar.Location = new Point(leftX + 210, startY + 26);
         btnBuscar.Size = new Size(130, 30);
         btnBuscar.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnBuscar.BackColor = ColorTranslator.FromHtml("#005C3A");
@@ -103,18 +104,18 @@ public class PagoForm : Form
         lblNombres.Text = "---";
         lblNombres.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         lblNombres.ForeColor = ColorTranslator.FromHtml("#005C3A");
-        lblNombres.Location = new Point(leftX, startY + 55);
+        lblNombres.Location = new Point(leftX, startY + 62);
         lblNombres.Size = new Size(340, 20);
         this.Controls.Add(lblNombres);
 
-        startY += 85;
+        startY += 95;
 
         lblTipoPase.Text = "Tipo de Pase:";
         lblTipoPase.Font = new Font("Segoe UI", 10);
         lblTipoPase.Location = new Point(leftX, startY);
         lblTipoPase.AutoSize = true;
 
-        cbTipoPase.Location = new Point(leftX, startY + 20);
+        cbTipoPase.Location = new Point(leftX, startY + 27);
         cbTipoPase.Size = new Size(340, 30);
         cbTipoPase.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         cbTipoPase.Font = new Font("Segoe UI", 11);
@@ -130,7 +131,7 @@ public class PagoForm : Form
         lblMetodo.Location = new Point(leftX, startY);
         lblMetodo.AutoSize = true;
 
-        cbMetodoPago.Location = new Point(leftX, startY + 20);
+        cbMetodoPago.Location = new Point(leftX, startY + 27);
         cbMetodoPago.Size = new Size(340, 30);
         cbMetodoPago.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         cbMetodoPago.Font = new Font("Segoe UI", 11);
@@ -146,7 +147,7 @@ public class PagoForm : Form
         lblNroOperacion.Location = new Point(leftX, startY);
         lblNroOperacion.AutoSize = true;
 
-        txtNroOperacion.Location = new Point(leftX, startY + 20);
+        txtNroOperacion.Location = new Point(leftX, startY + 27);
         txtNroOperacion.Size = new Size(340, 30);
         txtNroOperacion.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtNroOperacion.Font = new Font("Segoe UI", 11);

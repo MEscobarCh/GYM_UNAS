@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="Gym.Core/Gym.Core.csproj" />
-  <Project Path="Gym.Infrastructure/Gym.Infrastructure.csproj" />
-  <Project Path="Gym.Tests/Gym.Tests.csproj" />
-  <Project Path="Gym.UI/Gym.UI.csproj" />
-</Solution>

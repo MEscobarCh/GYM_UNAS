@@ -56,14 +56,15 @@ public class RegistroExternoForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.Size = new Size(400, 560);
-        this.StartPosition = FormStartPosition.CenterParent;
+        this.ClientSize = new Size(400, 440);
+        this.MinimumSize = new Size(415, 480);
+        this.StartPosition = FormStartPosition.CenterScreen;
         this.BackColor = Color.White;
 
         // Top Panel
 
-        int startY = 60;
-        int spacing = 60;
+        int startY = 20;
+        int spacing = 68;
         int leftX = 30;
 
         lblDni.Text = "DNI:";
@@ -71,7 +72,7 @@ public class RegistroExternoForm : Form
         lblDni.Location = new Point(leftX, startY);
         lblDni.AutoSize = true;
 
-        txtDni.Location = new Point(leftX, startY + 20);
+        txtDni.Location = new Point(leftX, startY + 26);
         txtDni.Size = new Size(340, 30);
         txtDni.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtDni.Font = new Font("Segoe UI", 11);
@@ -85,7 +86,7 @@ public class RegistroExternoForm : Form
         lblNombres.Location = new Point(leftX, startY);
         lblNombres.AutoSize = true;
 
-        txtNombres.Location = new Point(leftX, startY + 20);
+        txtNombres.Location = new Point(leftX, startY + 26);
         txtNombres.Size = new Size(340, 30);
         txtNombres.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtNombres.Font = new Font("Segoe UI", 11);
@@ -97,7 +98,7 @@ public class RegistroExternoForm : Form
         lblTelefono.Location = new Point(leftX, startY);
         lblTelefono.AutoSize = true;
 
-        txtTelefono.Location = new Point(leftX, startY + 20);
+        txtTelefono.Location = new Point(leftX, startY + 26);
         txtTelefono.Size = new Size(340, 30);
         txtTelefono.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtTelefono.Font = new Font("Segoe UI", 11);
@@ -109,12 +110,12 @@ public class RegistroExternoForm : Form
         lblCorreo.Location = new Point(leftX, startY);
         lblCorreo.AutoSize = true;
 
-        txtCorreo.Location = new Point(leftX, startY + 20);
+        txtCorreo.Location = new Point(leftX, startY + 26);
         txtCorreo.Size = new Size(340, 30);
         txtCorreo.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtCorreo.Font = new Font("Segoe UI", 11);
 
-        startY += 50;
+        startY += 55;
 
         btnCapturarHuella.Text = "Capturar Huella";
         btnCapturarHuella.BackColor = ColorTranslator.FromHtml("#005C3A");
@@ -135,7 +136,7 @@ public class RegistroExternoForm : Form
         lblHuellaEstado.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         lblHuellaEstado.AutoSize = true;
 
-        startY += 50;
+        startY += 55;
 
         lblError.Text = "";
         lblError.Font = new Font("Segoe UI", 9);

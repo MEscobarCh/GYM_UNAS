@@ -64,15 +64,16 @@ public class EnrolamientoForm : Form, DPFP.Capture.EventHandler
         btnBuscar.Visible = false;
         lblNombre.Visible = false;
 
-        this.Size = new Size(400, 380);
+        this.ClientSize = new Size(400, 400);
+        this.MinimumSize = new Size(415, 440);
         picHuella.Location = new Point((this.Width - 150) / 2, 60);
         
-        int startX = (this.Width - 150) / 2;
+        int startX = (this.ClientSize.Width - 150) / 2;
         for (int i = 0; i < 4; i++) pnlPasos[i].Location = new Point(startX + (i * 40), 250);
         
         lblEstado.Location = new Point(0, 270);
-        btnGuardarHuella.Location = new Point(60, 320);
-        btnCancelar.Location = new Point(210, 320);
+        btnGuardarHuella.Location = new Point(55, 320);
+        btnCancelar.Location = new Point(215, 320);
 
         IniciarLectorLocal();
     }
@@ -83,23 +84,24 @@ public class EnrolamientoForm : Form, DPFP.Capture.EventHandler
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.Size = new Size(400, 500);
-        this.StartPosition = FormStartPosition.CenterParent;
+        this.ClientSize = new Size(400, 480);
+        this.MinimumSize = new Size(415, 520);
+        this.StartPosition = FormStartPosition.CenterScreen;
         this.BackColor = Color.White;
 
         lblDNI.Text = "DNI / Código:";
-        lblDNI.Location = new Point(30, 60);
+        lblDNI.Location = new Point(30, 20);
         lblDNI.AutoSize = true;
         lblDNI.Font = new Font("Segoe UI", 10);
 
-        txtDNI.Location = new Point(30, 85);
+        txtDNI.Location = new Point(30, 46);
         txtDNI.Size = new Size(200, 30);
         txtDNI.Font = new Font("Segoe UI", 12);
         txtDNI.BorderStyle = BorderStyle.FixedSingle;
         txtDNI.KeyPress += (s, e) => { if (e.KeyChar == (char)Keys.Enter) { e.Handled = true; btnBuscar.PerformClick(); } };
 
         btnBuscar.Text = "Buscar";
-        btnBuscar.Location = new Point(240, 84);
+        btnBuscar.Location = new Point(240, 45);
         btnBuscar.Size = new Size(130, 32);
         btnBuscar.BackColor = ColorTranslator.FromHtml("#005C3A");
         btnBuscar.ForeColor = Color.White;
@@ -110,23 +112,23 @@ public class EnrolamientoForm : Form, DPFP.Capture.EventHandler
         btnBuscar.Click += BtnBuscar_Click;
 
         lblNombre.Text = "Ingrese DNI para buscar";
-        lblNombre.Location = new Point(30, 125);
+        lblNombre.Location = new Point(30, 85);
         lblNombre.Size = new Size(340, 20);
         lblNombre.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         lblNombre.ForeColor = Color.Gray;
 
         picHuella.Size = new Size(150, 180);
-        picHuella.Location = new Point((this.Width - 150) / 2, 160);
+        picHuella.Location = new Point((this.ClientSize.Width - 150) / 2, 115);
         picHuella.BorderStyle = BorderStyle.FixedSingle;
         picHuella.BackColor = Color.WhiteSmoke;
         picHuella.SizeMode = PictureBoxSizeMode.StretchImage;
 
-        int startX = (this.Width - 150) / 2;
+        int startX = (this.ClientSize.Width - 150) / 2;
         for (int i = 0; i < 4; i++)
         {
             pnlPasos[i] = new Panel();
             pnlPasos[i].Size = new Size(30, 8);
-            pnlPasos[i].Location = new Point(startX + (i * 40), 350);
+            pnlPasos[i].Location = new Point(startX + (i * 40), 305);
             pnlPasos[i].BackColor = Color.LightGray;
             this.Controls.Add(pnlPasos[i]);
         }
@@ -134,13 +136,14 @@ public class EnrolamientoForm : Form, DPFP.Capture.EventHandler
         lblEstado.Text = "Esperando búsqueda...";
         lblEstado.Font = new Font("Segoe UI", 11, FontStyle.Bold);
         lblEstado.ForeColor = Color.Gray;
-        lblEstado.Location = new Point(0, 370);
-        lblEstado.Size = new Size(this.Width, 30);
+        lblEstado.Location = new Point(0, 325);
+        lblEstado.Size = new Size(this.ClientSize.Width, 30);
         lblEstado.TextAlign = ContentAlignment.MiddleCenter;
 
         btnGuardarHuella.Text = "Guardar";
         btnGuardarHuella.Size = new Size(130, 40);
-        btnGuardarHuella.Location = new Point(60, 420);
+        btnGuardarHuella.Location = new Point(55, 375);
+        btnGuardarHuella.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
         btnGuardarHuella.BackColor = ColorTranslator.FromHtml("#005C3A");
         btnGuardarHuella.ForeColor = Color.White;
         btnGuardarHuella.FlatStyle = FlatStyle.Flat;
@@ -152,7 +155,8 @@ public class EnrolamientoForm : Form, DPFP.Capture.EventHandler
 
         btnCancelar.Text = "Cancelar";
         btnCancelar.Size = new Size(130, 40);
-        btnCancelar.Location = new Point(210, 420);
+        btnCancelar.Location = new Point(215, 375);
+        btnCancelar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         btnCancelar.BackColor = Color.LightGray;
         btnCancelar.ForeColor = Color.Black;
         btnCancelar.FlatStyle = FlatStyle.Flat;

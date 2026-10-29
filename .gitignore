@@ -13,3 +13,8 @@
 *.suo
 Thumbs.db
 .DS_Store
+
+Plaintext
+# Entornos virtuales
+.venv/
+venv/

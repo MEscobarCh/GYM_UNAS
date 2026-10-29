@@ -161,10 +161,10 @@ public class DashboardForm : Form
         
         lblSeleccion.Text = "Seleccione el Ciclo Académico:";
         lblSeleccion.Font = new Font("Segoe UI", 11, FontStyle.Bold);
-        lblSeleccion.Location = new Point(25, 25);
+        lblSeleccion.Location = new Point(25, 22);
         lblSeleccion.AutoSize = true;
 
-        cmbCiclos.Location = new Point(25, 55);
+        cmbCiclos.Location = new Point(25, 52);
         cmbCiclos.Size = new Size(400, 30);
         cmbCiclos.Font = new Font("Segoe UI", 12);
         cmbCiclos.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -210,10 +210,10 @@ public class DashboardForm : Form
         lblInstruccion.Text = "Escanee el código de barras o ingrese el DNI:";
         lblInstruccion.Font = new Font("Segoe UI", 12);
         lblInstruccion.ForeColor = ColorTranslator.FromHtml("#555555");
-        lblInstruccion.Location = new Point(25, 75);
+        lblInstruccion.Location = new Point(25, 68);
         lblInstruccion.AutoSize = true;
 
-        txtEscaner.Location = new Point(25, 110);
+        txtEscaner.Location = new Point(25, 98);
         txtEscaner.Size = new Size(500, 40);
         txtEscaner.Font = new Font("Segoe UI", 18);
         txtEscaner.BackColor = Color.White;
@@ -226,7 +226,7 @@ public class DashboardForm : Form
 
         btnIngresoHuella.Text = "Activar Lector de Puerta (F2)";
         btnIngresoHuella.Size = new Size(270, 40);
-        btnIngresoHuella.Location = new Point(545, 110);
+        btnIngresoHuella.Location = new Point(545, 98);
         btnIngresoHuella.BackColor = ColorTranslator.FromHtml("#005C3A");
         btnIngresoHuella.ForeColor = Color.White;
         btnIngresoHuella.FlatStyle = FlatStyle.Flat;

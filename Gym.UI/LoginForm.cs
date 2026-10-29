@@ -32,46 +32,70 @@ public class LoginForm : Form
     private void ConfigurarUI()
     {
         // Propiedades del formulario base
+        this.Text = "Gym UNAS - Acceso";
         this.BackColor = Color.White;
-        this.Size = new Size(700, 400);
         this.StartPosition = FormStartPosition.CenterScreen;
+        this.MinimumSize = new Size(720, 440);
+        this.Size = new Size(720, 440);
+        this.FormBorderStyle = FormBorderStyle.FixedDialog;
+        this.MaximizeBox = false;
 
         // Panel decorativo (izquierdo)
         panelIzquierdo.BackColor = ColorTranslator.FromHtml("#005C3A"); // Verde institucional UNAS
         panelIzquierdo.Dock = DockStyle.Left;
-        panelIzquierdo.Width = 250;
+        panelIzquierdo.Width = 240;
 
-        // Botón de cerrar ventana (esquina superior derecha)
+        // Botón Configuración (Engranaje) visible y anclado superior derecho del panel
+        Button btnConfig = new();
+        btnConfig.Text = "⚙";
+        btnConfig.Size = new Size(36, 36);
+        btnConfig.Location = new Point(panelIzquierdo.Width - 48, 12);
+        btnConfig.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        btnConfig.FlatStyle = FlatStyle.Flat;
+        btnConfig.FlatAppearance.BorderSize = 0;
+        btnConfig.BackColor = Color.Transparent;
+        btnConfig.ForeColor = Color.FromArgb(180, 255, 255, 255);
+        btnConfig.Font = new Font("Segoe UI", 15);
+        btnConfig.Cursor = Cursors.Hand;
+        btnConfig.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#004A2E");
+        btnConfig.Click += (s, e) => {
+            var configForm = (ConfigForm)_serviceProvider.GetService(typeof(ConfigForm))!;
+            configForm.ShowDialog();
+        };
+        panelIzquierdo.Controls.Add(btnConfig);
 
-        // Títulos
-
+        // Título / Subtítulo
         lblSubtitulo.Text = "Sistema Gym UNAS";
-        lblSubtitulo.Font = new Font("Segoe UI", 12, FontStyle.Regular);
-        lblSubtitulo.ForeColor = Color.Gray;
-        lblSubtitulo.AutoSize = true;
-        lblSubtitulo.Location = new Point(385, 85);
+        lblSubtitulo.Font = new Font("Segoe UI", 14, FontStyle.Bold);
+        lblSubtitulo.ForeColor = ColorTranslator.FromHtml("#222222");
+        lblSubtitulo.AutoSize = false;
+        lblSubtitulo.Size = new Size(320, 28);
+        lblSubtitulo.TextAlign = ContentAlignment.MiddleCenter;
+        lblSubtitulo.Location = new Point(310, 48);
 
-        // Inputs
+        // Inputs con separación vertical adecuada de +27px debajo de su Label
         lblUsuario.Text = "USUARIO:";
-        lblUsuario.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-        lblUsuario.ForeColor = Color.Gray;
-        lblUsuario.AutoSize = true;
-        lblUsuario.Location = new Point(340, 150);
+        lblUsuario.Font = new Font("Segoe UI", 8.5f, FontStyle.Bold);
+        lblUsuario.ForeColor = Color.FromArgb(100, 100, 100);
+        lblUsuario.AutoSize = false;
+        lblUsuario.Size = new Size(320, 18);
+        lblUsuario.Location = new Point(310, 95);
 
-        txtUsuario.Location = new Point(340, 170);
-        txtUsuario.Size = new Size(270, 30);
-        txtUsuario.Font = new Font("Segoe UI", 11);
+        txtUsuario.Location = new Point(310, 122);
+        txtUsuario.Size = new Size(320, 28);
+        txtUsuario.Font = new Font("Segoe UI", 10.5f);
         txtUsuario.BorderStyle = BorderStyle.FixedSingle;
 
         lblPassword.Text = "CONTRASEÑA:";
-        lblPassword.Font = new Font("Segoe UI", 9, FontStyle.Bold);
-        lblPassword.ForeColor = Color.Gray;
-        lblPassword.AutoSize = true;
-        lblPassword.Location = new Point(340, 220);
+        lblPassword.Font = new Font("Segoe UI", 8.5f, FontStyle.Bold);
+        lblPassword.ForeColor = Color.FromArgb(100, 100, 100);
+        lblPassword.AutoSize = false;
+        lblPassword.Size = new Size(320, 18);
+        lblPassword.Location = new Point(310, 165);
 
-        txtPassword.Location = new Point(340, 240);
-        txtPassword.Size = new Size(270, 30);
-        txtPassword.Font = new Font("Segoe UI", 11);
+        txtPassword.Location = new Point(310, 192);
+        txtPassword.Size = new Size(320, 28);
+        txtPassword.Font = new Font("Segoe UI", 10.5f);
         txtPassword.PasswordChar = '*';
         txtPassword.BorderStyle = BorderStyle.FixedSingle;
 
@@ -81,34 +105,21 @@ public class LoginForm : Form
         btnLogin.ForeColor = Color.White;
         btnLogin.FlatStyle = FlatStyle.Flat;
         btnLogin.FlatAppearance.BorderSize = 0;
-        btnLogin.Size = new Size(270, 40);
-        btnLogin.Location = new Point(340, 290);
+        btnLogin.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#004A2E");
+        btnLogin.Size = new Size(320, 40);
+        btnLogin.Location = new Point(310, 240);
         btnLogin.Font = new Font("Segoe UI", 10, FontStyle.Bold);
         btnLogin.Cursor = Cursors.Hand;
         btnLogin.Click += btnLogin_Click;
+        this.AcceptButton = btnLogin;
 
-        // Mensaje de estado
+        // Mensaje de estado (Badge)
         lblMensaje.AutoSize = false;
-        lblMensaje.Size = new Size(270, 30);
-        lblMensaje.Location = new Point(340, 340);
+        lblMensaje.Size = new Size(320, 32);
+        lblMensaje.Location = new Point(310, 295);
         lblMensaje.TextAlign = ContentAlignment.MiddleCenter;
         lblMensaje.Font = new Font("Segoe UI", 9);
-
-        // Botón Configuración (Engranaje)
-        Button btnConfig = new();
-        btnConfig.Text = "⚙";
-        btnConfig.Size = new Size(40, 40);
-        btnConfig.Location = new Point(10, this.Height - 50);
-        btnConfig.FlatStyle = FlatStyle.Flat;
-        btnConfig.FlatAppearance.BorderSize = 0;
-        btnConfig.ForeColor = Color.White;
-        btnConfig.Font = new Font("Segoe UI", 16, FontStyle.Bold);
-        btnConfig.Cursor = Cursors.Hand;
-        btnConfig.Click += (s, e) => {
-            var configForm = (ConfigForm)_serviceProvider.GetService(typeof(ConfigForm))!;
-            configForm.ShowDialog();
-        };
-        panelIzquierdo.Controls.Add(btnConfig);
+        lblMensaje.Visible = false;
 
         // Agregar controles
         this.Controls.Add(panelIzquierdo);
@@ -121,18 +132,24 @@ public class LoginForm : Form
         this.Controls.Add(lblMensaje);
     }
 
+    private void MostrarBadge(string mensaje, bool esError)
+    {
+        lblMensaje.Text = mensaje;
+        lblMensaje.BackColor = esError ? Color.FromArgb(253, 237, 237) : Color.FromArgb(235, 243, 250);
+        lblMensaje.ForeColor = esError ? Color.FromArgb(176, 0, 32) : Color.FromArgb(25, 103, 210);
+        lblMensaje.Visible = true;
+    }
+
     private async void btnLogin_Click(object? sender, EventArgs e)
     {
         // Pequeña validación de UI rápida antes de ir al backend
         if (string.IsNullOrWhiteSpace(txtUsuario.Text) || string.IsNullOrWhiteSpace(txtPassword.Text))
         {
-            lblMensaje.Text = "Complete todos los campos.";
-            lblMensaje.ForeColor = Color.Red;
+            MostrarBadge("Complete todos los campos.", esError: true);
             return;
         }
 
-        lblMensaje.Text = "Verificando credenciales...";
-        lblMensaje.ForeColor = Color.Gray;
+        MostrarBadge("Verificando credenciales...", esError: false);
         btnLogin.Enabled = false;
 
         try
@@ -148,8 +165,7 @@ public class LoginForm : Form
         }
         catch (CredencialesInvalidasException ex)
         {
-            lblMensaje.Text = ex.Message;
-            lblMensaje.ForeColor = Color.Red;
+            MostrarBadge(ex.Message, esError: true);
         }
         catch (Exception ex)
         {

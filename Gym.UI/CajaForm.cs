@@ -48,7 +48,8 @@ public class CajaForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.Size = new Size(900, 650);
+        this.ClientSize = new Size(900, 680);
+        this.MinimumSize = new Size(920, 720);
         this.StartPosition = FormStartPosition.CenterScreen;
         this.BackColor = ColorTranslator.FromHtml("#F0F2F5");
 
@@ -56,7 +57,7 @@ public class CajaForm : Form
 
         // Top Content: Resumen de Caja
         gbResumen.Text = "Resumen de Caja Hoy";
-        gbResumen.Location = new Point(20, 60);
+        gbResumen.Location = new Point(20, 20);
         gbResumen.Size = new Size(860, 80);
         gbResumen.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         gbResumen.Font = new Font("Segoe UI", 10, FontStyle.Bold);
@@ -87,7 +88,7 @@ public class CajaForm : Form
 
         // Middle Content: Filtros
         Panel pnlFiltros = new Panel();
-        pnlFiltros.Location = new Point(20, 150);
+        pnlFiltros.Location = new Point(20, 115);
         pnlFiltros.Size = new Size(860, 50);
         pnlFiltros.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         pnlFiltros.BackColor = Color.White;
@@ -142,8 +143,8 @@ public class CajaForm : Form
         this.Controls.Add(pnlFiltros);
 
         // Bottom Content: DataGridView
-        dgvHistorial.Location = new Point(20, 210);
-        dgvHistorial.Size = new Size(860, 420);
+        dgvHistorial.Location = new Point(20, 180);
+        dgvHistorial.Size = new Size(860, 480);
         dgvHistorial.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         dgvHistorial.AllowUserToAddRows = false;
         dgvHistorial.AllowUserToDeleteRows = false;

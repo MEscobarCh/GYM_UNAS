@@ -40,8 +40,9 @@ public class AsistenciasForm : Form
         this.FormBorderStyle = FormBorderStyle.FixedDialog;
         this.MaximizeBox = false;
         this.MinimizeBox = false;
-        this.Size = new Size(900, 600);
-        this.StartPosition = FormStartPosition.CenterParent;
+        this.ClientSize = new Size(900, 620);
+        this.MinimumSize = new Size(920, 660);
+        this.StartPosition = FormStartPosition.CenterScreen;
         this.BackColor = ColorTranslator.FromHtml("#F0F2F5");
 
         // Top Panel
@@ -57,13 +58,13 @@ public class AsistenciasForm : Form
         lblFecha.AutoSize = true;
         lblFecha.Font = new Font("Segoe UI", 10, FontStyle.Bold);
 
-        dtpFecha.Location = new Point(75, 22);
+        dtpFecha.Location = new Point(80, 20);
         dtpFecha.Format = DateTimePickerFormat.Short;
         dtpFecha.Size = new Size(150, 25);
         dtpFecha.Font = new Font("Segoe UI", 10);
 
         btnBuscar.Text = "Refrescar / Buscar";
-        btnBuscar.Location = new Point(240, 20);
+        btnBuscar.Location = new Point(250, 18);
         btnBuscar.Size = new Size(180, 30);
         btnBuscar.BackColor = ColorTranslator.FromHtml("#005C3A");
         btnBuscar.ForeColor = Color.White;
